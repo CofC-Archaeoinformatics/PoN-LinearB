@@ -1,0 +1,3 @@
+[submodule "LinearB-WP"]
+	path = LinearB-WP
+	url = https://github.com/CofC-Archaeoinformatics/LinearB-WP.git
