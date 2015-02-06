@@ -1,2 +1,2 @@
-# geras
-scripts and information about the GERAS project 
+# PoN Linear B
+scripts and information about the Palace of Nestor Linear B project 
