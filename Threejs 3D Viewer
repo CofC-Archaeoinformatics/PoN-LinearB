@@ -1,5 +1,9 @@
-var scene, camera, renderer, keyboard, tablet, mouseOnTablet;
+var scene, camera, renderer, keyboard, tablet, mouseOnTablet, texture;
 
+var delay = 0;
+var isLoaded = false;
+var textureTimer = true;
+var textureOn = true;
 var origin = new THREE.Vector3(0, 0, 0);
 var mouse = new THREE.Vector2();
 var raycaster;
@@ -52,13 +56,16 @@ function init() {
 //  LOADING THE OBJECT IN FROM THE /js/ FOLDER
 
 	var loader = new THREE.JSONLoader();
-	loader.load("js/tablet_20_tiny_withScalar_workingTex.json", function(object,
+	loader.load("js/tablet_100_tiny_withScalar.json", function(object,
 			materials) {
 		//scene.add(object);
 		//var faceMaterial = new THREE. MeshFaceMaterial( materials );
 		
 		//tablet = new THREE.Mesh(geometry, materials[0]);
-		tablet = new THREE.Mesh(object, new THREE.MeshFaceMaterial(materials));
+		texture = new THREE.MeshFaceMaterial(materials);
+		tablet = new THREE.Mesh(object, texture);
+		materials.needsUpdate = true;
+		tablet.matrixAutoUpdate = false;
 		//tablet = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial(materials));
 		//scene.add(tablet);
 		//tablet.position.x = -10;
@@ -85,18 +92,30 @@ function init() {
 	light2.position.set(100, -200, -100);
 	scene.add(light2);
 
-
+	THREE.DefaultLoadingManager.onProgress = function ( item, loaded, total ) {
+	    console.log( item, loaded, total );
+	    isLoaded = true;
+	};
+	
 	//Orbit controls
 	//consider fixed controls with movable object and fixed camera
 
 	controls = new THREE.TrackballControls(camera, renderer.domElement);
 	//it is possible to disable pan and zoom functions
-	controls.noPan = false;
+	controls.rotateSpeed = 2.5;
+	controls.zoomSpeed = 3;
+	controls.panSpeed = 0.8;
 	controls.noZoom = false;
+	controls.noPan = false;
+	controls.staticMoving = true;
+	controls.dynamicDampingFactor = 0.3;
 
 	//raycaster object to be used for future control scheme
 	raycaster = new THREE.Raycaster();
 }
+window.onbeforeunload = function() {
+    scene.remove(tablet);
+};
 
 //the following code was partially taken from:
 //http://mrdoob.github.io/three.js/examples/canvas_geometry_cube.html
@@ -158,20 +177,44 @@ function onDocumentTouchMove(event) {
 }
 //END - doob github code
 
+function delayUpdate() {
+	  if ((new Date().getTime() - delay) > 200){
+	      textureTimer = true;
+	    }
+	  }
+
 function animate() {
-
 	requestAnimationFrame(animate);
+	if(isLoaded == true){
 	raycaster.set(camera.position, origin);
-
+	
 	//render logic:
 	
 	//current event system results in these adjustments to the object:
 	//tablet.rotation.y = targetRotationX;
 	//tablet.rotation.x = targetRotationY;
 	//however they are commented out as they have not been fully implemented
-
-	renderer.render(scene, camera);
+	
+	if(!textureTimer){delayUpdate();}
+	
+	if(keyboard.pressed("space") && textureTimer)
+	{
+		textureTimer = false;
+		delay = new Date().getTime();
+		
+		if(textureOn){
+			textureOn = false;
+			tablet.material = new THREE.MeshLambertMaterial();
+		}
+		else{
+			textureOn = true;
+			tablet.material = texture;
+		}
+	}
 	controls.update();
+	renderer.render(scene, camera);
+	}
+	
 }
 
 //the following code was take from:
