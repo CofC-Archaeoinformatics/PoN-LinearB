@@ -45,7 +45,7 @@ def process(file, log):
     try:
         bpy.ops.export.threejs(filepath = "O://geras/{0}/{0}.json".format(file))
     except:
-	   log.writeLines("Unexpected Error: ", sys.exc_info()[0])
+	   log.writeLines("Unexpected Error on {0}: ".format(file), sys.exc_info()[0])
     
 main()
     
