@@ -5,7 +5,7 @@ import io
 def main():
     i = 120
     fileExists = True    
-    testfile = io.open("changelog.txt",'ab')
+    testfile = io.open("errorLog.txt",'ab')
     
     while(fileExists):
         file = '{0:05d}'.format(i)
