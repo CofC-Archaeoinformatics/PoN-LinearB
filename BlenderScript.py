@@ -1,11 +1,13 @@
 import bpy
 import os
 import io
+import datetime
 
 def main():
     i = 120
     fileExists = True    
     testfile = io.open("errorLog.txt",'ab')
+    testfile.writeLines("\n\nError for export beginning on {0}\n----------------------------\n".format(datetime.dat.today()))
     
     while(fileExists):
         file = '{0:05d}'.format(i)
